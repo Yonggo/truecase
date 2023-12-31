@@ -14,10 +14,6 @@ backwardBiDist = nltk.FreqDist()
 forwardBiDist = nltk.FreqDist() 
 trigramDist = nltk.FreqDist() 
 wordCasingLookup = {}
-
-
-        
-        
         
 """
 There are three options to train the true caser:

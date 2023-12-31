@@ -2,8 +2,8 @@ import pickle
 import string
 import math
 import time
-
 import nltk
+from tqdm import tqdm
 
 """
 This file contains the functions to truecase a sentence.
@@ -144,12 +144,20 @@ if __name__ == "__main__":
     f.close()
     end_latency_time_counter = time.time()
     print('latency time: {:.2f}s'.format(end_latency_time_counter - start_latency_time_counter))
-    sentence = input("Enter sentence: ")
-    start = time.time()
-    tokens = nltk.word_tokenize(sentence)
-    tokensTrueCased = getTrueCase(tokens, 'title', wordCasingLookup, uniDist, backwardBiDist, forwardBiDist, trigramDist)
-    result = " ".join(tokensTrueCased)
-    end = time.time()
-    print("Processing time: {:.3f}s".format(end - start))
-    print("=============== Result ===============")
-    print(result)
+
+    f_output = open("result_truecase.txt", "w", encoding="utf8")
+
+    sentences = []
+    with open("Dataset/de_train.low.ft.txt", "r", encoding="utf8") as file:
+        sentences = file.readlines()
+
+    for sentence in tqdm(sentences, "Truecasing"):
+        tokens = nltk.word_tokenize(sentence)
+        tokensTrueCased = getTrueCase(tokens, 'title', wordCasingLookup,
+                                      uniDist, backwardBiDist, forwardBiDist, trigramDist)
+        result = (" ".join(tokensTrueCased)
+                  .replace(" .",".")
+                  .replace(" :", ":")
+                  .replace(" !", "!")
+                  .replace(" ,", ","))
+        f_output.write(result+"\n")
