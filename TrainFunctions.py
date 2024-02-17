@@ -51,7 +51,6 @@ def updateDistributionsFromSentences(text, wordCasingLookup, uniDist, backwardBi
                 wordCasingLookup[word.lower()] = set()
             
             wordCasingLookup[word.lower()].add(word)
-            
     
     # :: Create backward + forward bigram lookup ::
     progress = range(len(text))
@@ -64,14 +63,21 @@ def updateDistributionsFromSentences(text, wordCasingLookup, uniDist, backwardBi
             word = text[i][tokenIdx]
             wordLower = word.lower()
             
-            if wordLower in wordCasingLookup and len(wordCasingLookup[wordLower]) >= 2: #Only if there are multiple options
+            if wordLower in wordCasingLookup and len(wordCasingLookup[wordLower]) > 1: #Only if there are multiple options
                 prevWord = text[i][tokenIdx-1]
                 
-                backwardBiDist[prevWord+"_"+word] +=1
-                
-                if tokenIdx < len(text[i])-1:
-                    nextWord = text[i][tokenIdx+1].lower()
-                    forwardBiDist[word+"_"+nextWord] += 1
+                backwardBiDist[prevWord.lower()+"_"+word] +=1
+                backwardBiDist[prevWord + "_" + word] += 1
+
+        for tokenIdx in range(1, len(text[i])-1):
+            word = text[i][tokenIdx]
+            wordLower = word.lower()
+
+            if wordLower in wordCasingLookup and len(wordCasingLookup[wordLower]) > 1: #Only if there are multiple options
+                nextWord = text[i][tokenIdx+1]
+
+                forwardBiDist[word + "_" + nextWord.lower()] += 1
+                forwardBiDist[word + "_" + nextWord] += 1
                     
     # :: Create trigram lookup ::
     progress = range(len(text))
@@ -87,8 +93,9 @@ def updateDistributionsFromSentences(text, wordCasingLookup, uniDist, backwardBi
             #nextWordLower = sentence[tokenIdx+1].lower()
             nextWord = text[i][tokenIdx + 1] #changed by Yong to use instead of nextWordLower
             
-            if curWordLower in wordCasingLookup and len(wordCasingLookup[curWordLower]) >= 2: #Only if there are multiple options   
-                trigramDist[prevWord+"_"+curWord+"_"+nextWord] += 1
+            if curWordLower in wordCasingLookup and len(wordCasingLookup[curWordLower]) > 1: #Only if there are multiple options
+                trigramDist[prevWord.lower()+"_"+curWord+"_"+nextWord.lower()] += 1
+                trigramDist[prevWord + "_" + curWord + "_" + nextWord] += 1
 
         # added by Yong to consider the tri-gram used by paper of Lita
         for tokenIdx in range(3, len(text[i])):  # Start at 3 to skip first and second word in sentence
@@ -97,17 +104,19 @@ def updateDistributionsFromSentences(text, wordCasingLookup, uniDist, backwardBi
             curWord = text[i][tokenIdx]
             curWordLower = curWord.lower()
 
-            if curWordLower in wordCasingLookup and len(wordCasingLookup[curWordLower]) >= 2:  # Only if there are multiple options
+            if curWordLower in wordCasingLookup and len(wordCasingLookup[curWordLower]) > 1:  # Only if there are multiple options
+                trigramDist[prevPrevWord.lower() + "_" + prevWord.lower() + "_" + curWord] += 1
                 trigramDist[prevPrevWord + "_" + prevWord + "_" + curWord] += 1
 
         # added by Yong to consider forwarding case
-        for tokenIdx in range(1, len(text[i]) - 2):  # Start at 2 to skip first word in sentence
+        for tokenIdx in range(1, len(text[i])-2):  # Start at 2 to skip first word in sentence
             curWord = text[i][tokenIdx]
             nextWord = text[i][tokenIdx + 1]
             nextNextWord = text[i][tokenIdx + 2]
             curWordLower = curWord.lower()
 
-            if curWordLower in wordCasingLookup and len(wordCasingLookup[curWordLower]) >= 2:  # Only if there are multiple options
+            if curWordLower in wordCasingLookup and len(wordCasingLookup[curWordLower]) > 1:  # Only if there are multiple options
+                trigramDist[curWord + "_" + nextWord.lower() + "_" + nextNextWord.lower()] += 1
                 trigramDist[curWord + "_" + nextWord + "_" + nextNextWord] += 1
  
 

@@ -70,10 +70,3 @@ f.close()
 defaultTruecaserEvaluation(wordCasingLookup, uniDist, backwardBiDist, forwardBiDist, trigramDist, train_file)
 
 print('Training time: {:.2f}s'.format(end_counter - start_counter))
-        
-        
-
-
-
-        
-        

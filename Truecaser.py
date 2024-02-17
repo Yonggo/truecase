@@ -11,7 +11,9 @@ This file contains the functions to truecase a sentence.
 
 def getScore(prevPrevToken, prevToken, possibleToken, nextToken, nextNextToken, wordCasingLookup, uniDist, backwardBiDist, forwardBiDist, trigramDist):
     pseudoCount = 5.0
-    
+    nextToken = nextToken.lower() if nextToken else None
+    nextNextToken = nextNextToken.lower() if nextNextToken else None
+
     #Get Unigram Score
     nominator = uniDist[possibleToken]+pseudoCount    
     denominator = 0    
@@ -33,8 +35,7 @@ def getScore(prevPrevToken, prevToken, possibleToken, nextToken, nextNextToken, 
         
     #Get Forward Score  
     bigramForwardScore = 1
-    if nextToken != None:  
-        nextToken = nextToken.lower() #Ensure it is lower case
+    if nextToken != None:
         nominator = forwardBiDist[possibleToken+"_"+nextToken]+pseudoCount
         denominator = 0    
         for alternativeToken in wordCasingLookup[possibleToken.lower()]:
